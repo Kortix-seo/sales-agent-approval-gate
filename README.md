@@ -147,6 +147,10 @@ No send authority at any setting on any connector. No bulk write: the persona fo
 
 The agent also will not guess a title from a name, use anything about a person outside their working life, or write a draft when the record contradicts the research. Where to look next: [Kortix on GitHub](https://github.com/kortix-ai/suna).
 
+## Where the same decision is written out for a buyer
+
+Two pages go further than this repo does, without the code: one on [what a sales agent may do before a person approves it](https://aisalesagentsguide.com/ai-sales-agent-approvals), and one on [what it writes back into the CRM](https://aisalesagentsguide.com/ai-sales-agent-crm-write-back).
+
 ## When a managed SDR is the better buy
 
 If you want outbound run for you, with the sequences, sending and reply handling that someone else operates, and no configuration to own or review, buy a managed AI SDR such as Artisan, 11x or AiSDR instead. This repo is for the team that wants the CRM write and the send to be decisions it can read in a diff.

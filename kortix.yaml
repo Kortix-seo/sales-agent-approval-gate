@@ -1,0 +1,105 @@
+# yaml-language-server: $schema=https://kortix.com/schema/kortix.v2.schema.json
+#
+# Example project: a sales follow-up agent whose CRM writes and outbound sends
+# stop at a person. Copy this file into a Kortix project, then connect your own
+# HubSpot, Gmail and Google Calendar accounts to the three connectors.
+kortix_version: 2
+default_agent: sales-follow-up
+
+project:
+  name: sales-agent-approval-gate
+  description: A sales follow-up agent whose every write and send stops at a person.
+
+# Connectors are declared once for the project. Kortix holds the credential
+# server-side; the sandbox never receives it.
+connectors:
+  - slug: hubspot
+    name: HubSpot
+    provider: composio
+    app: hubspot
+    policies:
+      # Reads run: the agent has to see the lead before it can work it.
+      - match: "get_*"
+        action: always_run
+      - match: "search_*"
+        action: always_run
+      # The record write is the agent's real output, and it outlives the
+      # session that made it. A person decides each one.
+      - match: "write_*"
+        action: require_approval
+      - match: "update_*"
+        action: require_approval
+      # Deleting a record is never the agent's call.
+      - match: "delete_*"
+        action: block
+
+  - slug: gmail
+    name: Gmail
+    provider: composio
+    app: gmail
+    policies:
+      # A draft is a file in the mailbox. Creating one runs.
+      - match: "draft_*"
+        action: always_run
+      - match: "get_*"
+        action: always_run
+      # Sending is the one action a person owns.
+      - match: "send_*"
+        action: require_approval
+
+  - slug: google_calendar
+    name: Google Calendar
+    provider: composio
+    app: googlecalendar
+    policies:
+      - match: "list_*"
+        action: always_run
+      - match: "get_*"
+        action: always_run
+      # Booking time on a colleague's calendar waits for that colleague.
+      - match: "create_*"
+        action: require_approval
+
+# Project-wide rules are evaluated before any connector rule and no connector
+# rule can override them. Patterns are fully qualified.
+policy:
+  # Reads run; writes and destructive actions are held. Set this first on a
+  # project that can reach a CRM.
+  default_mode: risk
+
+policies:
+  # Rules are evaluated in order and the first match wins, so the exception
+  # comes first: a message to your own domain goes out without a hold, which
+  # is how you run the flow end to end against a test lead.
+  - match: "gmail.send_email"
+    action: always_run
+    conditions:
+      - arg: to
+        match: "*@your-company.example"
+  # Everything else: no agent in this project mails a lead because a model
+  # decided to.
+  - match: "*.send_*"
+    action: require_approval
+  - match: "*.delete_*"
+    action: block
+
+agents:
+  sales-follow-up:
+    file: agents/sales-follow-up.md
+    # Deny-by-default: an omitted grant resolves to "none".
+    connectors: [hubspot, gmail, google_calendar]
+    secrets: none
+    skills: [sales-follow-up-playbook]
+    kortix_permissions: none
+    workspace: { project_repository: true }
+
+triggers:
+  - slug: hubspot-sweep
+    name: HubSpot new-lead sweep
+    type: cron
+    agent: sales-follow-up
+    cron: "0 */15 * * * *"
+    session_mode: fresh
+    prompt: |
+      Sweep HubSpot for leads created or updated since the last marker, work
+      each one as an independent unit, and stop before every write and send.

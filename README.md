@@ -11,6 +11,8 @@ The email that goes to a lead is the part everyone audits. The HubSpot record th
 - `skills/sales-follow-up-playbook/SKILL.md`: the playbook as a skill.
 - `docs/hubspot-sweep.md`: one sweep, and one morning.
 
+Together they are the whole project, which is the point: the agent, the playbook and the permissions are text in a repo you own. For the buyer's version of that argument, [what an open-source AI sales agent puts in your repo](https://aisalesagentsguide.com/open-source-ai-sales-agent) walks the layout, the permissions list and the rule before the send.
+
 ## The problem: which calls a person has already decided
 
 Working one lead means reading the record, searching the company, writing a note back, drafting a reply, checking a calendar and sending. A person who approves all six stops reading them by the second week. A person who approves none has handed an agent a mailbox and write access to the CRM, and will learn what it did from a customer.
@@ -139,6 +141,8 @@ Then check that the test path fires. The exception is listed first, so a message
 
 One note on this manifest as it ships. The docs describe Composio as a legacy provider that moves to a Kortix catalog app when the `connectors_v2` flag is on, and say a connector whose project rule names an old provider's tool does not move until that rule is removed. `gmail.send_email` is such a rule.
 
+If the machine the agent runs on is yours, [running the agent on your own infrastructure](https://aisalesagentsguide.com/self-hosted-ai-sales-agent) covers what changes: one Compose stack on your host, sessions on sandboxes that call back to the instance's public API URL, and an install with no public address that finishes and still starts no session.
+
 The lead follow-up this repo is a cut of is the one [Kortix](https://kortix.com/use-cases/lead-follow-up) runs itself.
 
 ## What is deliberately not here
@@ -149,8 +153,10 @@ The agent also will not guess a title from a name, use anything about a person o
 
 ## Where the same decision is written out for a buyer
 
-Two pages go further than this repo does, without the code: one on [what a sales agent may do before a person approves it](https://aisalesagentsguide.com/ai-sales-agent-approvals), and one on [what it writes back into the CRM](https://aisalesagentsguide.com/ai-sales-agent-crm-write-back).
+The approvals have a written version that does not start from a manifest. One page takes [what a sales agent may do before a person approves it](https://aisalesagentsguide.com/ai-sales-agent-approvals) and runs the same allow, ask and block decisions over a whole lead rather than one connector. Another takes [what it writes back into the CRM](https://aisalesagentsguide.com/ai-sales-agent-crm-write-back) and treats the record as the risky artefact rather than the email, which is the argument this manifest is built on.
+
+If you are still choosing a tool rather than reading one, [the comparison hub](https://aisalesagentsguide.com/) sets the open-source options beside the managed AI SDRs and sorts them by who approves a send.
 
 ## When a managed SDR is the better buy
 
-If you want outbound run for you, with the sequences, sending and reply handling that someone else operates, and no configuration to own or review, buy a managed AI SDR such as Artisan, 11x or AiSDR instead. This repo is for the team that wants the CRM write and the send to be decisions it can read in a diff.
+If you want outbound run for you, with the sequences, sending and reply handling that someone else operates, and no configuration to own or review, buy a managed AI SDR such as Artisan, 11x or AiSDR instead. [What an AI SDR is, in the vendors' own words](https://aisalesagentsguide.com/ai-sdr) draws the category as Salesforce and AiSDR define it, research, write, send and book, and lands where this repo does: the demo and the close stay with a person, and someone still decides what reaches a buyer. On the two differences that settle it, [Kortix compared with AiSDR on price and the send gate](https://aisalesagentsguide.com/kortix-vs-aisdr) sets $1.50 per person contacted beside the credits plan and each send rule next to the other. This repo is for the team that wants the CRM write and the send to be decisions it can read in a diff.

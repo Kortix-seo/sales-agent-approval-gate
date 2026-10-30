@@ -157,6 +157,8 @@ The approvals have a written version that does not start from a manifest. One pa
 
 If you are still choosing a tool rather than reading one, [the comparison hub](https://aisalesagentsguide.com/) sets the open-source options beside the managed AI SDRs and sorts them by who approves a send.
 
+When the shortlist is the work, [eight AI SDR tools compared](https://aisalesagentsguide.com/ai-sdr-tools-compared) sets who presses send beside what each one charges: a switch in a vendor dashboard, a guard set in a script, or a person reading the draft.
+
 ## When a managed SDR is the better buy
 
 If you want outbound run for you, with the sequences, sending and reply handling that someone else operates, and no configuration to own or review, buy a managed AI SDR such as Artisan, 11x or AiSDR instead. [What an AI SDR is, in the vendors' own words](https://aisalesagentsguide.com/ai-sdr) draws the category as Salesforce and AiSDR define it, research, write, send and book, and lands where this repo does: the demo and the close stay with a person, and someone still decides what reaches a buyer. On the two differences that settle it, [Kortix compared with AiSDR on price and the send gate](https://aisalesagentsguide.com/kortix-vs-aisdr) sets $1.50 per person contacted beside the credits plan and each send rule next to the other. This repo is for the team that wants the CRM write and the send to be decisions it can read in a diff.

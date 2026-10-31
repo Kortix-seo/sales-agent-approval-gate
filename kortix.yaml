@@ -1,9 +1,9 @@
-# yaml-language-server: $schema=https://kortix.com/schema/kortix.v2.schema.json
+# yaml-language-server: $schema=https://kortix.com/schema/kortix.v3.schema.json
 #
 # Example project: a sales follow-up agent whose CRM writes and outbound sends
 # stop at a person. Copy this file into a Kortix project, then connect your own
 # HubSpot, Gmail and Google Calendar accounts to the three connectors.
-kortix_version: 2
+kortix_version: 3
 default_agent: sales-follow-up
 
 project:
@@ -83,9 +83,13 @@ policies:
   - match: "*.delete_*"
     action: block
 
+# Registries: what the project has. A registry entry gives nothing to any agent.
+skills:
+  sales-follow-up-playbook: skills/sales-follow-up-playbook
+
 agents:
   sales-follow-up:
-    file: agents/sales-follow-up.md
+    prompt_file: agents/sales-follow-up.md
     # Deny-by-default: an omitted grant resolves to "none".
     connectors: [hubspot, gmail, google_calendar]
     secrets: none

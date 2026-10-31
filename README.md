@@ -1,12 +1,12 @@
 # An open-source sales follow-up agent that stops at every write and send
 
-An open-source example project for Kortix: a sales follow-up agent for inbound leads, with the rules that decide what it may do without a person written into the repo beside the agent. Kortix is the open-source AI Operating System the agent runs on, and everything here is four files you can read in ten minutes.
+An open-source example project for Kortix: a sales follow-up agent for inbound leads, with the rules that decide what it may do without a person written into the repo beside the agent. Kortix is the open-source CompanyOS: your agents, their skills, your company memory, and every connector in one git repo you own, with the agents working on real cloud computers. Everything here is four files you can read in ten minutes.
 
 The email that goes to a lead is the part everyone audits. The HubSpot record the agent writes back is the part that changes the pipeline, and it is the part a default configuration leaves running. Both stop here, on separate rules, because they are not the same risk.
 
 ## What is here
 
-- `kortix.yaml`: three connectors with per-action policies, two project-wide rules, the grant and a cron trigger.
+- `kortix.yaml`: three connectors with per-action policies, three project-wide rules, the grant and a cron trigger.
 - `agents/sales-follow-up.md`: the persona, ending with what it never does.
 - `skills/sales-follow-up-playbook/SKILL.md`: the playbook as a skill.
 - `docs/hubspot-sweep.md`: one sweep, and one morning.
@@ -91,16 +91,19 @@ policies:
     action: block
 ```
 
-They are evaluated before any connector rule, and no connector rule can override them. Within the list the first match wins, which is why the exception comes first: a message to an address at your own domain runs without a hold, while every other send waits, and a connector added tomorrow, under any name, cannot send or delete without a person.
+Kortix evaluates these first, then any policy set bound to the calling agent, then the connector's own rules, and no connector rule can loosen a project rule. Within the list the first match wins, which is why the exception comes first: a message to an address at your own domain runs without a hold, while every other send waits, and a connector added tomorrow, under any name, cannot send or delete without a person.
 
-`default_mode: risk` is the net underneath it all. Approval gates you set. Off until you set them.
+`default_mode: risk` is the net underneath it all: a call that no rule matches still lets a read run and holds a write. Leave it out and the default is `allow_all`. Approval gates you set. Off until you set them.
 
 ### The grant
 
 ```yaml
+skills:
+  sales-follow-up-playbook: skills/sales-follow-up-playbook
+
 agents:
   sales-follow-up:
-    file: agents/sales-follow-up.md
+    prompt_file: agents/sales-follow-up.md
     connectors: [hubspot, gmail, google_calendar]
     secrets: none
     skills: [sales-follow-up-playbook]
@@ -108,15 +111,19 @@ agents:
     workspace: { project_repository: true }
 ```
 
-The starter manifest's header states the rule this rests on: v2 is deny-by-default, and an omitted connectors, secrets, permissions or skills grant resolves to none. This agent reaches three connectors because three are listed. `secrets: none` is not decoration. The agent holds no provider credential, because the connector does that work outside the boundary.
+The manifest is `kortix_version: 3`, and v3 works in two steps: the project registers what exists, and each agent enables what it uses by name. A skill folder reaches no agent until an agent's `skills:` grant names it, and an omitted `skills`, `connectors`, `secrets` or `kortix_permissions` grant resolves to none. This agent reaches three connectors because three are listed. `secrets: none` is not decoration. The agent holds no provider credential, because the connector does that work outside the boundary.
+
+Three keys are open by default: `tools` is all, `permission` is allow and `codemode` is on. None of them reaches HubSpot, Gmail or a calendar on its own, which is why the rules above, and not the grant, carry the weight here.
 
 ## What a person sees
 
-A held call returns `202` with `status: pending_approval`, an `approval_url` and the redacted arguments the provider will receive. Nothing ran and the session is paused at the call.
+The agent's turn stops at the held call. In a session it waits under Review, in Needs you, and on the approval card in a Slack or Teams thread when the session started there. A script that calls the same connector gets `ConnectorApprovalPendingError` instead, which carries an `approvalUrl` and an `executionId`.
 
-The approval appears in Review, under Needs you, and on the card in a Slack or Teams thread if the session started there. Opening it asks for a Kortix account that can approve actions in the project. You read the exact arguments, then Approve or Deny, with an optional message back to the agent.
+The page shows what the app will receive, with private values hidden. A project manager, or the person who started the session, reads it and chooses Approve or Deny, with an optional note back to the agent. Approve runs the call once, as the agent that asked, and the agent resumes with the result. Kortix checks the project's rules again at that moment, so a Block rule still wins.
 
-Three properties matter more than the button. An approval covers one exact request: the same connector, action, arguments and account, so a changed argument needs a new one. There is no session-wide approval and no trust-this-agent-for-an-hour. After an approval the identical call runs once if it repeats within 15 minutes, which is a retry allowance and not a standing permit. A held call expires when nobody decides it within 24 hours, the link expires with it, and the session does not resume.
+An approval covers one exact call: the same connector, action, arguments and account, so a changed argument needs a new one. There is no approve-everything-for-this-session. A caller whose token is not scoped to the project repeats the identical call within 15 minutes of the decision. With a project-scoped token you repeat nothing, and a repeat while the call still waits or runs answers with the same execution id instead of a second approval. That window is a retry allowance for one call, not a standing permit.
+
+A held call that nobody decides expires at `approvals.ttl`, 24 hours by default and settable from 5 minutes to 30 days.
 
 Every action is recorded. Reading, exporting and streaming the audit log depend on the plan.
 
@@ -131,7 +138,7 @@ kortix init sales-agent-approval-gate
 cd sales-agent-approval-gate
 ```
 
-Put the three files in place, then run `kortix ship`, which checks `kortix.yaml`, commits, pushes the branch and asks you to connect the connectors it declares. [Read the docs](https://kortix.com/docs/cli) for the rest of the loop.
+Replace `kortix.yaml` with the one here and add the other three files, then run `kortix ship`, which validates `kortix.yaml`, commits, offers to set any missing secret, pushes the branch and connects the connectors it declares. [Read the docs](https://kortix.com/docs/cli) for the rest of the loop.
 
 Then connect your own HubSpot, Gmail and Google Calendar accounts, as whichever identity should own the writes. This repo ships no credential, and it has not been run against a live HubSpot account. Connector credentials are brokered server-side and never enter the machine.
 
@@ -139,11 +146,11 @@ One edit is required before the first sweep. Replace `*@your-company.example` wi
 
 Then check that the test path fires. The exception is listed first, so a message to your own domain goes out without a hold while every other send waits. Create a test lead with an address at your own domain and watch Review: the send leaves, and the note the agent wrote on that same record is still waiting for you. [Read the docs](https://kortix.com/docs/connect/connectors) for the rest of the semantics.
 
-One note on this manifest as it ships. The docs describe Composio as a legacy provider that moves to a Kortix catalog app when the `connectors_v2` flag is on, and say a connector whose project rule names an old provider's tool does not move until that rule is removed. `gmail.send_email` is such a rule.
+One note on this manifest as it ships. The three connectors use `provider: composio`, and Kortix can move a Pipedream or Composio connector onto its own app of the same slug: `kortix connectors moves` lists what can move, and `kortix connectors move <slug>` moves one. A move finishes either as `moved` or as `sign_in`, when the new app wants the account connected again, so reconnect Gmail afterwards and check that the send rule still matches the action the connector exposes.
 
 If the machine the agent runs on is yours, [running the agent on your own infrastructure](https://aisalesagentsguide.com/self-hosted-ai-sales-agent) covers what changes: one Compose stack on your host, sessions on sandboxes that call back to the instance's public API URL, and an install with no public address that finishes and still starts no session.
 
-The lead follow-up this repo is a cut of is the one [Kortix](https://kortix.com/use-cases/lead-follow-up) runs itself.
+The lead follow-up this repo is a cut of is the one [Kortix](https://kortix.com/use-cases/lead-follow-up) runs itself: a HubSpot sweep every 15 minutes, a fresh session each time, the research notes written onto the record, and the draft held in the email channel for a rep to review, edit and send, with `kortix_followup_drafted` set on the contact so the next sweep skips it. This repo keeps the sweep and puts the draft in Gmail instead, with the send on a rule of its own.
 
 ## What is deliberately not here
 
@@ -157,8 +164,10 @@ The approvals have a written version that does not start from a manifest. One pa
 
 If you are still choosing a tool rather than reading one, [the comparison hub](https://aisalesagentsguide.com/) sets the open-source options beside the managed AI SDRs and sorts them by who approves a send.
 
-When the shortlist is the work, [eight AI SDR tools compared](https://aisalesagentsguide.com/ai-sdr-tools-compared) sets who presses send beside what each one charges: a switch in a vendor dashboard, a guard set in a script, or a person reading the draft.
-
 ## When a managed SDR is the better buy
 
-If you want outbound run for you, with the sequences, sending and reply handling that someone else operates, and no configuration to own or review, buy a managed AI SDR such as Artisan, 11x or AiSDR instead. [What an AI SDR is, in the vendors' own words](https://aisalesagentsguide.com/ai-sdr) draws the category as Salesforce and AiSDR define it, research, write, send and book, and lands where this repo does: the demo and the close stay with a person, and someone still decides what reaches a buyer. On the two differences that settle it, [Kortix compared with AiSDR on price and the send gate](https://aisalesagentsguide.com/kortix-vs-aisdr) sets $1.50 per person contacted beside the credits plan and each send rule next to the other. This repo is for the team that wants the CRM write and the send to be decisions it can read in a diff.
+If you want outbound run for you, with the sequences, sending and reply handling that someone else operates, and no configuration to own or review, buy a managed AI SDR such as Artisan, 11x or AiSDR instead. [What an AI SDR is, in the vendors' own words](https://aisalesagentsguide.com/ai-sdr) draws the category as Salesforce and AiSDR define it, research, write, send and book, and lands where this repo does: the demo and the close stay with a person, and someone still decides what reaches a buyer.
+
+On the two differences that settle it, [Kortix compared with AiSDR on price and the send gate](https://aisalesagentsguide.com/kortix-vs-aisdr) sets $1.50 per person contacted beside the credits plan, and each send rule next to the other: a switch inside a vendor dashboard, or a rule in a file you can read. This repo is for the team that wants the CRM write and the send to be decisions it can read in a diff.
+
+When the shortlist is the work, [eight AI SDR tools compared](https://aisalesagentsguide.com/ai-sdr-tools-compared) sorts the tools by that same question, into a switch in a vendor dashboard, a guard set in a script you own, and a person reading the draft.

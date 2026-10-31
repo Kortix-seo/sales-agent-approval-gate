@@ -111,7 +111,7 @@ agents:
     workspace: { project_repository: true }
 ```
 
-The manifest is `kortix_version: 3`, and v3 works in two steps: the project registers what exists, and each agent enables what it uses by name. A skill folder reaches no agent until an agent's `skills:` grant names it, and an omitted `skills`, `connectors`, `secrets` or `kortix_permissions` grant resolves to none. This agent reaches three connectors because three are listed. `secrets: none` is not decoration. The agent holds no provider credential, because the connector does that work outside the boundary.
+The manifest carries no version line: the format has no version. Registration works in two steps. The project registers what exists in a top-level `skills:` map, and each agent enables what it uses with its own grants. A skill folder reaches no agent until an agent's `skills:` grant names it, and an omitted `skills`, `connectors`, `secrets` or `kortix_permissions` grant resolves to none. This agent reaches three connectors because three are listed. `secrets: none` is not decoration. The agent holds no provider credential, because the connector does that work outside the boundary.
 
 Three keys are open by default: `tools` is all, `permission` is allow and `codemode` is on. None of them reaches HubSpot, Gmail or a calendar on its own, which is why the rules above, and not the grant, carry the weight here.
 

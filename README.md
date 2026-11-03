@@ -11,7 +11,7 @@ The email that goes to a lead is the part everyone audits. The HubSpot record th
 - `skills/sales-follow-up-playbook/SKILL.md`: the playbook as a skill.
 - `docs/hubspot-sweep.md`: one sweep, and one morning.
 
-Together they are the whole project, which is the point: the agent, the playbook and the permissions are text in a repo you own. For the buyer's version of that argument, [what an open-source AI sales agent puts in your repo](https://aisalesagentsguide.com/open-source-ai-sales-agent) walks the layout, the permissions list and the rule before the send.
+Together they are the whole project, which is the point: the agent, the playbook and the permissions are text in a repo you own. For the buyer's version of that argument, [what an open-source AI sales agent puts in your repo](https://aisalesagentsguide.com/open-source-ai-sales-agent) walks the layout, the permissions list and the rule before the send. When the question is instead which tool to buy, [eight AI SDR tools compared](https://aisalesagentsguide.com/ai-sdr-tools-compared) reads each vendor's own pricing page for where its authority over a send actually stops.
 
 ## The problem: which calls a person has already decided
 

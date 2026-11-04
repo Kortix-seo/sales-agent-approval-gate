@@ -156,7 +156,7 @@ The lead follow-up this repo is a cut of is the one [Kortix](https://kortix.com/
 
 No send authority at any setting on any connector. No bulk write: the persona forbids writing to more than one record in a single action, so a batch becomes separate decisions a person sees one at a time. No vendor dashboard that mirrors the policies somewhere they can drift from the repo.
 
-The agent also will not guess a title from a name, use anything about a person outside their working life, or write a draft when the record contradicts the research. Where to look next: [Kortix on GitHub](https://github.com/kortix-ai/suna).
+The agent also will not guess a title from a name, use anything about a person outside their working life, or write a draft when the record contradicts the research. Where to look next: [Kortix on GitHub](https://github.com/kortix-ai/CompanyOS).
 
 ## Where the same decision is written out for a buyer
 

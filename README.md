@@ -171,3 +171,5 @@ If you want outbound run for you, with the sequences, sending and reply handling
 On the two differences that settle it, [Kortix compared with AiSDR on price and the send gate](https://aisalesagentsguide.com/kortix-vs-aisdr) sets $1.50 per person contacted beside the credits plan, and each send rule next to the other: a switch inside a vendor dashboard, or a rule in a file you can read. This repo is for the team that wants the CRM write and the send to be decisions it can read in a diff.
 
 When the shortlist is the work, [eight AI SDR tools compared](https://aisalesagentsguide.com/ai-sdr-tools-compared) sorts the tools by that same question, into a switch in a vendor dashboard, a guard set in a script you own, and a person reading the draft.
+
+If you would rather read the open-source side on its own, [six open-source AI SDR tools and where each one stops the send](https://aisalesagentsguide.com/open-source-ai-sdr-tools) takes SalesGPT, Knotie-AI, Relaticle, DeskcommCRM, OpenSales and OpenCloser one at a time and names the stopping place in each.
